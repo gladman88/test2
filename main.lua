@@ -140,8 +140,10 @@ function love.keypressed(key)
     if key == 'p' then
         if pauseBool then
         	pauseBool = false
+        	sounds['music']:resume()
         else
         	pauseBool = true
+        	sounds['music']:pause()
         end
     end
 end
