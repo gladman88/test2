@@ -62,6 +62,9 @@ local GROUND_SCROLL_SPEED = 60
 
 local BACKGROUND_LOOPING_POINT = 413
 
+local pauseBool = false
+local godMode = false
+
 function love.load()
     -- initialize our nearest-neighbor filter
     love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -112,6 +115,7 @@ function love.load()
 
     -- initialize input table
     love.keyboard.keysPressed = {}
+    love.keyboard.keysPressedQ = {0,0,0}
 
     -- initialize mouse input table
     love.mouse.buttonsPressed = {}
@@ -124,9 +128,21 @@ end
 function love.keypressed(key)
     -- add to our table of keys pressed this frame
     love.keyboard.keysPressed[key] = true
+    table.insert(love.keyboard.keysPressedQ, key)
+    if tableSize(love.keyboard.keysPressedQ) > 3 then
+    	table.remove(love.keyboard.keysPressedQ, 1)
+    end
 
     if key == 'escape' then
         love.event.quit()
+    end
+    
+    if key == 'p' then
+        if pauseBool then
+        	pauseBool = false
+        else
+        	pauseBool = true
+        end
     end
 end
 
@@ -153,23 +169,37 @@ function love.mouse.wasPressed(button)
     return love.mouse.buttonsPressed[button]
 end
 
+function tableSize(T)
+	local count = 0
+	for _ in pairs(T) do count = count + 1 end
+	return count
+end
+
 function love.update(dt)
-    -- scroll our background and ground, looping back to 0 after a certain amount
-    backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
-    groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+	if not pauseBool then
+    	-- scroll our background and ground, looping back to 0 after a certain amount
+    	backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
+    	groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
+	
+    	gStateMachine:update(dt)
 
-    gStateMachine:update(dt)
-
-    love.keyboard.keysPressed = {}
-    love.mouse.buttonsPressed = {}
+    	love.keyboard.keysPressed = {}
+    	love.mouse.buttonsPressed = {}
+    end
 end
 
 function love.draw()
     push:start()
     
-    love.graphics.draw(background, -backgroundScroll, 0)
-    gStateMachine:render()
-    love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16)
+    if not pauseBool then
+    	love.graphics.draw(background, -backgroundScroll, 0)
+    	gStateMachine:render()
+    	love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16)
+    else
+    	love.graphics.clear(59,147,111, 255)
+    	love.graphics.setFont(hugeFont)
+    	love.graphics.printf("PAUSE", 0, 120, VIRTUAL_WIDTH, 'center')
+    end
     
     push:finish()
 end

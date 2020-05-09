@@ -23,4 +23,9 @@ function TitleScreenState:render()
 
     love.graphics.setFont(mediumFont)
     love.graphics.printf('Press Enter', 0, 100, VIRTUAL_WIDTH, 'center')
+    
+    love.graphics.setColor(128, 0, 0, 255)
+    love.graphics.setFont(smallFont)
+    love.graphics.printf('Press "IDD" in the game for God Mode', 0, 230, VIRTUAL_WIDTH, 'center')
+    love.graphics.setColor(255,255,255)
 end
