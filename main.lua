@@ -88,7 +88,7 @@ function love.load()
         ['explosion'] = love.audio.newSource('explosion.wav', 'static'),
         ['hurt'] = love.audio.newSource('hurt.wav', 'static'),
         ['score'] = love.audio.newSource('score.wav', 'static'),
-
+		['pause'] = love.audio.newSource('pause.wav', 'static'),
         -- https://freesound.org/people/xsgianni/sounds/388079/
         ['music'] = love.audio.newSource('marios_way.mp3', 'static')
     }
@@ -140,9 +140,11 @@ function love.keypressed(key)
     if key == 'p' then
         if pauseBool then
         	pauseBool = false
+        	sounds['pause']:play()
         	sounds['music']:resume()
         else
         	pauseBool = true
+        	sounds['pause']:play()
         	sounds['music']:pause()
         end
     end
